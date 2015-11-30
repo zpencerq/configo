@@ -8,18 +8,20 @@ Example:
 
 
 	type Config struct {
-	  SomeThing SomeThing
+	  SomeThing *SomeThing
 	  Mysql  MysqlConfig `toml:"mysql"`
-	  Port Int `default:"8080"`
+	  Port  *Int `default:"8080"`
 	}
 	
 	type MysqlConfig struct {
-	  Dsn string
+	  Dsn *string
 	}
+	
+	mydb := "/mydb"
 	
 	config := Config{
 	  Mysql: MysqlConfig{
-	      Dsn: "/mydb",
+	    Dsn: &mydb,
 	  },
 	}
 	
