@@ -1,0 +1,43 @@
+tomlstring = "toml_String"
+tomlptrstring = "toml_PtrString"
+tomlint = 7878
+tomlptrint = 8787
+tomlbool = true
+tomlptrbool = true
+
+envstring = "fail_if_you_see_this"
+envptrstring = "fail_if_you_see_this"
+envint = 0
+envptrint = 0
+envbool = false
+envptrbool = false
+
+[struct]
+tomlstring = "toml_String"
+tomlptrstring = "toml_PtrString"
+tomlint = 7878
+tomlptrint = 8787
+tomlbool = true
+tomlptrbool = true
+
+envstring = "fail_if_you_see_this"
+envptrstring = "fail_if_you_see_this"
+envint = 0
+envptrint = 0
+envbool = false
+envptrbool = false
+
+[structptr]
+tomlstring = "toml_String"
+tomlptrstring = "toml_PtrString"
+tomlint = 7878
+tomlptrint = 8787
+tomlbool = true
+tomlptrbool = true
+
+envstring = "fail_if_you_see_this"
+envptrstring = "fail_if_you_see_this"
+envint = 0
+envptrint = 0
+envbool = false
+envptrbool = false
