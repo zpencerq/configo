@@ -33,6 +33,44 @@ Example:
 
 
 
+## func FromDefaults
+``` go
+func FromDefaults(v interface{}) error
+```
+FromDefaults sets pointer `v` based on default values of `v`.
+
+A field's value will be determined based on the following order:
+
+1. If `v` already contains a value for the field, it will be used.
+2. If a "default" tag exists for a field, its value will be used, subject to type casting.
+3. The field will be initialized to its zero value (i.e., "" for string, 0 for int, etc).
+
+
+
+## func FromEnv
+``` go
+func FromEnv(v interface{}) error
+```
+FromEnv sets pointer `v` based on the environment.
+
+A field's value will be determined based on the following order:
+
+1. If an "env" tag exists for a field and an environment variable matching the tag's value exists, the environment variable's value will be used, subject to type casting.
+2. If `v` already contains a value for the field, it will be used.
+
+
+
+## func FromTOML
+``` go
+func FromTOML(f string, v interface{}) error
+```
+FromTOML decodes the contents of the file `f` in TOML format into a pointer `v`.
+
+A field's value will be determined based on the following order:
+
+1. If the field exists in the file, its value will be used. The `toml` tag may be used to map TOML keys to fields that don't match the key name exactly.
+2. If `v` already contains a value for the field, it will be used.
+
 
 
 ## func UnmarshalFile
@@ -48,7 +86,6 @@ A field's value will be determined based on the following order:
 3. If `v` already contains a value for the field, it will be used.
 4. If a "default" tag exists for a field, its value will be used, subject to type casting.
 5. The field will be initialized to its zero value (i.e., "" for string, 0 for int, etc).
-
 
 
 

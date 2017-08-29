@@ -78,6 +78,55 @@ func UnmarshalFile(f string, v interface{}) error {
 	return nil
 }
 
+// FromDefaults sets pointer `v` based on default values of `v`.
+//
+// A field's value will be determined based on the following order:
+//
+// 1. If `v` already contains a value for the field, it will be used.
+// 2. If a "default" tag exists for a field, its value will be used, subject to type casting.
+// 3. The field will be initialized to its zero value (i.e., "" for string, 0 for int, etc).
+func FromDefaults(v interface{}) error {
+	rv := reflect.ValueOf(v).Elem()
+
+	return setDefaults(&rv)
+}
+
+// FromEnv sets pointer `v` based on the environment.
+//
+// A field's value will be determined based on the following order:
+//
+// 1. If an "env" tag exists for a field and an environment variable matching the tag's value exists, the environment variable's value will be used, subject to type casting.
+// 2. If `v` already contains a value for the field, it will be used.
+func FromEnv(v interface{}) error {
+	rv := reflect.ValueOf(v).Elem()
+
+	return setEnv(&rv)
+}
+
+// FromTOML decodes the contents of the file `f` in TOML format into a pointer `v`.
+//
+// A field's value will be determined based on the following order:
+//
+// 1. If the field exists in the file, its value will be used. The `toml` tag may be used to map TOML keys to fields that don't match the key name exactly.
+// 2. If `v` already contains a value for the field, it will be used.
+func FromTOML(f string, v interface{}) error {
+	rv := reflect.ValueOf(v).Elem()
+
+	// Unmarshalling TOML onto a non-zero struct is inconsistent.
+	// One time the value might be the pre-existing value, another time
+	// it might be from the TOML. Instead we unmarshal onto a new struct
+	// then walk the struct copying non-zero values.
+
+	nv := reflect.New(rv.Type())
+	ni := nv.Interface()
+	_, err := toml.DecodeFile(f, ni)
+	if err != nil {
+		return err
+	}
+
+	return setToml(&rv, nv.Elem())
+}
+
 func isZero(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.String:

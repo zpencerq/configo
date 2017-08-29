@@ -372,3 +372,203 @@ func TestUnmarshalFileIgnoreFields(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestFromEnv(t *testing.T) {
+	err := testUnsetEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	env := map[string]string{
+		"ENVSTRING":    testEnvString,
+		"ENVPTRSTRING": testEnvPtrString,
+		"ENVINT":       fmt.Sprintf("%d", testEnvInt),
+		"ENVPTRINT":    fmt.Sprintf("%d", testEnvPtrInt),
+		"ENVBOOL":      "true",
+		"ENVPTRBOOL":   "true",
+	}
+
+	err = testSetEnv(env)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sub1 := Types{
+		PassString:    testPassString,
+		PassPtrString: &testPassPtrString,
+		TomlString:    testErrString,
+		TomlPtrString: &testErrString,
+		EnvString:     testErrString,
+		EnvPtrString:  &testErrString,
+
+		PassInt:    testPassInt,
+		PassPtrInt: &testPassPtrInt,
+		TomlInt:    testErrInt,
+		TomlPtrInt: &testErrInt,
+		EnvInt:     testErrInt,
+		EnvPtrInt:  &testErrInt,
+
+		PassBool:    testBoolTrue,
+		PassPtrBool: &testBoolTrue,
+		TomlBool:    testErrBool,
+		TomlPtrBool: &testErrBool,
+		EnvBool:     testErrBool,
+		EnvPtrBool:  &testErrBool,
+	}
+
+	got := SubTypes{
+		Struct: sub1,
+		StructPtr: &Types{
+			PassString:    testPassString,
+			PassPtrString: &testPassPtrString,
+			TomlString:    testErrString,
+			TomlPtrString: &testErrString,
+			EnvString:     testErrString,
+			EnvPtrString:  &testErrString,
+
+			PassInt:    testPassInt,
+			PassPtrInt: &testPassPtrInt,
+			TomlInt:    testErrInt,
+			TomlPtrInt: &testErrInt,
+			EnvInt:     testErrInt,
+			EnvPtrInt:  &testErrInt,
+
+			PassBool:    testBoolTrue,
+			PassPtrBool: &testBoolTrue,
+			TomlBool:    testErrBool,
+			TomlPtrBool: &testErrBool,
+			EnvBool:     testErrBool,
+			EnvPtrBool:  &testErrBool,
+		},
+
+		PassString:    testPassString,
+		PassPtrString: &testPassPtrString,
+		TomlString:    testErrString,
+		TomlPtrString: &testErrString,
+		EnvString:     testErrString,
+		EnvPtrString:  &testErrString,
+
+		PassInt:    testPassInt,
+		PassPtrInt: &testPassPtrInt,
+		TomlInt:    testErrInt,
+		TomlPtrInt: &testErrInt,
+		EnvInt:     testErrInt,
+		EnvPtrInt:  &testErrInt,
+
+		PassBool:    testBoolTrue,
+		PassPtrBool: &testBoolTrue,
+		TomlBool:    testErrBool,
+		TomlPtrBool: &testErrBool,
+		EnvBool:     testErrBool,
+		EnvPtrBool:  &testErrBool,
+	}
+
+	err = FromDefaults(&got)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = FromEnv(&got)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Empty(t, got.ZeroString)
+	assert.Equal(t, "default_String", got.DefaultString)
+	assert.Equal(t, "pass_String", got.PassString)
+	assert.NotEqual(t, testErrString, got.TomlString)
+	assert.Equal(t, testEnvString, got.EnvString)
+	assert.Empty(t, *got.ZeroPtrString)
+	assert.Equal(t, "default_PtrString", *got.DefaultPtrString)
+	assert.Equal(t, "pass_PtrString", *got.PassPtrString)
+	assert.Equal(t, testErrString, *got.TomlPtrString)
+	assert.Equal(t, testEnvPtrString, *got.EnvPtrString)
+
+	assert.Empty(t, got.ZeroInt)
+	assert.Equal(t, 1234, got.DefaultInt)
+	assert.Equal(t, testPassInt, got.PassInt)
+	assert.Equal(t, 0, got.TomlInt)
+	assert.Equal(t, testEnvInt, got.EnvInt)
+	assert.Empty(t, *got.ZeroPtrInt)
+	assert.Equal(t, 4321, *got.DefaultPtrInt)
+	assert.Equal(t, testPassPtrInt, *got.PassPtrInt)
+	assert.Equal(t, 9876, *got.TomlPtrInt)
+	assert.Equal(t, testEnvPtrInt, *got.EnvPtrInt)
+
+	assert.Empty(t, got.ZeroBool)
+	assert.Equal(t, true, got.DefaultBool)
+	assert.Equal(t, true, got.PassBool)
+	assert.Equal(t, false, got.TomlBool)
+	assert.Equal(t, true, got.EnvBool)
+	assert.Empty(t, *got.ZeroPtrBool)
+	assert.Equal(t, true, *got.DefaultPtrBool)
+	assert.Equal(t, true, *got.PassPtrBool)
+	assert.Equal(t, true, *got.TomlPtrBool)
+	assert.Equal(t, true, *got.EnvPtrBool)
+
+	assert.Empty(t, got.Struct.ZeroString)
+	assert.Equal(t, "default_String", got.Struct.DefaultString)
+	assert.Equal(t, "pass_String", got.Struct.PassString)
+	assert.NotEqual(t, testErrString, got.Struct.TomlString)
+	assert.Equal(t, testEnvString, got.Struct.EnvString)
+	assert.Empty(t, *got.Struct.ZeroPtrString)
+	assert.Equal(t, "default_PtrString", *got.Struct.DefaultPtrString)
+	assert.Equal(t, "pass_PtrString", *got.Struct.PassPtrString)
+	assert.Equal(t, testEnvPtrString, *got.Struct.TomlPtrString)
+	assert.Equal(t, testEnvPtrString, *got.Struct.EnvPtrString)
+
+	assert.Empty(t, got.Struct.ZeroInt)
+	assert.Equal(t, 1234, got.Struct.DefaultInt)
+	assert.Equal(t, testPassInt, got.Struct.PassInt)
+	assert.Equal(t, 0, got.Struct.TomlInt)
+	assert.Equal(t, testEnvInt, got.Struct.EnvInt)
+	assert.Empty(t, *got.Struct.ZeroPtrInt)
+	assert.Equal(t, 4321, *got.Struct.DefaultPtrInt)
+	assert.Equal(t, testPassPtrInt, *got.Struct.PassPtrInt)
+	assert.Equal(t, testEnvPtrInt, *got.Struct.TomlPtrInt)
+	assert.Equal(t, testEnvPtrInt, *got.Struct.EnvPtrInt)
+
+	assert.Empty(t, got.Struct.ZeroBool)
+	assert.Equal(t, true, got.Struct.DefaultBool)
+	assert.Equal(t, true, got.Struct.PassBool)
+	assert.Equal(t, false, got.Struct.TomlBool)
+	assert.Equal(t, true, got.Struct.EnvBool)
+	assert.Empty(t, *got.Struct.ZeroPtrBool)
+	assert.Equal(t, true, *got.Struct.DefaultPtrBool)
+	assert.Equal(t, true, *got.Struct.PassPtrBool)
+	assert.Equal(t, true, *got.Struct.TomlPtrBool)
+	assert.Equal(t, true, *got.Struct.EnvPtrBool)
+
+	assert.Empty(t, got.StructPtr.ZeroString)
+	assert.Equal(t, "default_String", got.StructPtr.DefaultString)
+	assert.Equal(t, "pass_String", got.StructPtr.PassString)
+	assert.NotEqual(t, testErrString, got.StructPtr.TomlString)
+	assert.Equal(t, testEnvString, got.StructPtr.EnvString)
+	assert.Empty(t, *got.StructPtr.ZeroPtrString)
+	assert.Equal(t, "default_PtrString", *got.StructPtr.DefaultPtrString)
+	assert.Equal(t, "pass_PtrString", *got.StructPtr.PassPtrString)
+	assert.Equal(t, testErrString, *got.StructPtr.TomlPtrString)
+	assert.Equal(t, testEnvPtrString, *got.StructPtr.EnvPtrString)
+
+	assert.Empty(t, got.StructPtr.ZeroInt)
+	assert.Equal(t, 1234, got.StructPtr.DefaultInt)
+	assert.Equal(t, testPassInt, got.StructPtr.PassInt)
+	assert.Equal(t, 0, got.StructPtr.TomlInt)
+	assert.Equal(t, testEnvInt, got.StructPtr.EnvInt)
+	assert.Empty(t, *got.StructPtr.ZeroPtrInt)
+	assert.Equal(t, 4321, *got.StructPtr.DefaultPtrInt)
+	assert.Equal(t, testPassPtrInt, *got.StructPtr.PassPtrInt)
+	assert.Equal(t, 9876, *got.StructPtr.TomlPtrInt)
+	assert.Equal(t, testEnvPtrInt, *got.StructPtr.EnvPtrInt)
+
+	assert.Empty(t, got.StructPtr.ZeroBool)
+	assert.Equal(t, true, got.StructPtr.DefaultBool)
+	assert.Equal(t, true, got.StructPtr.PassBool)
+	assert.Equal(t, false, got.StructPtr.TomlBool)
+	assert.Equal(t, true, got.StructPtr.EnvBool)
+	assert.Empty(t, *got.StructPtr.ZeroPtrBool)
+	assert.Equal(t, true, *got.StructPtr.DefaultPtrBool)
+	assert.Equal(t, true, *got.StructPtr.PassPtrBool)
+	assert.Equal(t, true, *got.StructPtr.TomlPtrBool)
+	assert.Equal(t, true, *got.StructPtr.EnvPtrBool)
+}
